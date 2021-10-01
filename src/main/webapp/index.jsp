@@ -1,3 +1,4 @@
+<%@ page import="View.Controller" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html>
@@ -9,5 +10,10 @@
 </h1>
 <br/>
 <a href="hello-servlet">Hello Servlet</a>
+<%
+    Controller con = new Controller();
+    con.doGet(request,response);
+
+%>
 </body>
 </html>
