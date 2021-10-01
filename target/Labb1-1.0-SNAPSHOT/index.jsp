@@ -9,11 +9,6 @@
 <h1><%= "Hello World!" %>
 </h1>
 <br/>
-<a href="hello-servlet">Hello Servlet</a>
-<%
-    Controller con = new Controller();
-    con.doGet(request,response);
-
-%>
+<input type="button" name="action1" value="Invoke Search Sodas"><a href="hello-servlet"></a>
 </body>
 </html>

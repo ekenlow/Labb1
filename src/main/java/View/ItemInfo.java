@@ -1,10 +1,10 @@
 package View;
 
 public class ItemInfo {
-    private String type;
-    private String name;
-    private int stock;
-    private float price;
+    private final String type;
+    private final String name;
+    private final int stock;
+    private final float price;
 
     public ItemInfo(String type, String name, int stock, float price) {
         this.type = type;
@@ -21,5 +21,21 @@ public class ItemInfo {
                 ", stock=" + stock +
                 ", price=" + price +
                 '}';
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+
+    public float getPrice() {
+        return price;
     }
 }
