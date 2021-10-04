@@ -40,4 +40,9 @@ public class DBManager {
 
     }
 
+    public static void disconnect() throws SQLException {
+        if (instance != null)
+            instance.con.close();
+    }
+
 }
