@@ -19,25 +19,8 @@ public class DBOrder extends BO.Order{
         super(id, status, items);
     }
     public static ArrayList<Order> getById(int search){
-        //return null;
-        ArrayList<BO.Order> collection = new ArrayList<>();
-        try {
-            Connection con = DBManager.getCon();
-            PreparedStatement st = con.prepareStatement(searchById);
-            st.setString(1, String.valueOf(search));
-            ResultSet rs = st.executeQuery();
+        return null;
 
-            while (rs.next()){
-                int id = rs.getInt("id");
-                Status status = Status.valueOf(rs.getString("status"));
-                ArrayList<Item> items = (ArrayList<Item>) DBItem.getById(String.valueOf(search));
-
-                collection.add(new DBOrder(id,status,items));
-            }
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
-        return collection;
     }
 
 }

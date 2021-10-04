@@ -40,4 +40,14 @@ public class DBManager {
 
     }
 
+    public static void disconnect() {
+        if (instance != null) {
+            try {
+                instance.con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }

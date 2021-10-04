@@ -1,27 +1,34 @@
 package View;
 
 import BO.ItemHandler;
+import BO.UserHandler;
+import DB.DBManager;
+import com.mysql.cj.Session;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.Enumeration;
 
 @WebServlet(name = "helloServlet", value="/hello-servlet")
 public class Controller extends HttpServlet {
-    private String message;
+
+    private static final String home = "/Labb1_war_exploded/";
 
     public void init() {
-        // Run before anything else.
+        DBManager.getCon();
     }
 
+    private void login() {
+
+    }
 
     public void getSodas(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        message =ItemHandler.getByName("Cola").toString();
+        String message =ItemHandler.getByName("Cola").toString();
         PrintWriter out = resp.getWriter();
         out.println("<html><body>");
         out.println("<h1>" + message + "</h1>");
@@ -30,25 +37,54 @@ public class Controller extends HttpServlet {
 
 
     @Override // https://stackoverflow.com/questions/9500051/multiple-method-calling-using-single-servlet
-    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-       switch (req.getParameterNames().toString()) {
-           case "action1":
-               getSodas(req, resp);
-               break;
-           case "action2...":
-               break;
-           default:
-               System.out.println("No action made");
-               break;
-       }
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        RequestDispatcher dispatcher;
+        if (req.getParameter("action2") != null) {
+            System.out.println("here 2");
+            resp.sendRedirect(home);
+        } else {
+            System.err.println("Missning name in JSP");
+        }
     }
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
+        RequestDispatcher dispatcher;
+        HttpSession session = req.getSession();
+        if (req.getParameter("login") != null) {
+            if (authenticate(req, resp)) {
+                dispatcher = req.getRequestDispatcher("welcome.jsp");
+                try {
+                    UserInfo u = UserHandler.getByName(req.getParameter("username"));
+                    session.setAttribute("user", u);
+                    dispatcher.forward(req, resp);
+                } catch (ServletException e) {
+                    System.err.println("Welcome.jsp not found");
+                    e.printStackTrace();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            else {
+                session.setAttribute("error", "Username or password incorrect");
+                resp.sendRedirect("/Labb1_war_exploded/");
+            }
+        }
     }
 
-    public void destroy() {
+    private boolean authenticate(HttpServletRequest req, HttpServletResponse resp) {
+        try {
+            return UserHandler.login(req.getParameter("username"), req.getParameter("password"));
 
+        } catch (SQLException | NullPointerException e) {
+            System.err.println("No such user");
+            return false; // No such user
+        }
+    }
+
+
+
+    public void destroy() {
+        DBManager.disconnect();
     }
 }
