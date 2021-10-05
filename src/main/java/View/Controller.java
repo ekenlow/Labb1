@@ -69,10 +69,20 @@ public class Controller extends HttpServlet {
                 session.setAttribute("error", "Username or password incorrect");
                 resp.sendRedirect("/Labb1_war_exploded/");
             }
-        }
-    }
+        }else if(req.getParameter("register") != null){
+            String username = req.getParameter("username");
+            String password = req.getParameter("password");
+                try{
+                    UserInfo u = UserHandler.createUser(username,password);
+                }catch (SQLException e){
+                    session.setAttribute("error","Error!");
+                }
+                resp.sendRedirect(home);
+            }
 
-    private boolean authenticate(HttpServletRequest req, HttpServletResponse resp) {
+        }
+
+        private boolean authenticate(HttpServletRequest req, HttpServletResponse resp) {
         try {
             return UserHandler.login(req.getParameter("username"), req.getParameter("password"));
 

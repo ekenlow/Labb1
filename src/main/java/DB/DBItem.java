@@ -15,12 +15,35 @@ public class DBItem extends BO.Item {
     public static Collection getByName(String search) {
         return getItems(search, searchByName);
     }
-    public static Collection getById(String search) {
-        return getItems(search, searchById);
+    public static DBItem getById(String search) {
+        return getItem(search, searchById);
     }
     public static Collection getByType(String search){
         return getItems(search,searchByType);
     }
+
+
+    private static DBItem getItem(String search, String searchBy) {
+        DBItem item = null;
+        try {
+            Connection con = DBManager.getCon();
+            PreparedStatement st = con.prepareStatement(searchBy);
+            st.setString(1,search);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()){
+                item = new DBItem(rs.getInt("id"),
+                                rs.getString("type"),
+                                rs.getString("name"),
+                                rs.getInt("stock"),
+                                rs.getFloat("price"));
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return item;
+    }
+
     private static Collection<Item> getItems(String search, String searchBy) {
         ArrayList<Item> collection = new ArrayList<>();
         try {

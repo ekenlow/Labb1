@@ -14,6 +14,6 @@
 </head>
 <body>
     <h1>YOU ARE LOGGED IN!!!!!</h1>
-    <p>Welcome ${sessionScope.get("user").username}</p>
+    <p>Welcome ${sessionScope.get("user").username}, you are a ${sessionScope.get("user").type}</p>
 </body>
 </html>

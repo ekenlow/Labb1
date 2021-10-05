@@ -23,8 +23,7 @@ public class Item {
     public static Collection getByName(String search){
         return DBItem.getByName(search);
     }
-    public static Collection getNewId (String search){ return DBItem.getById(search);}
-    public static Collection getByID(String search) { return DBItem.getByID(search); }
+    public static Item getById (String search){ return DBItem.getById(search);}
     public static Collection getByType(String search){ return DBItem.getByType(search);}
 
     public String getType() {
