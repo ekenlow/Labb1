@@ -1,6 +1,7 @@
 package View;
 
 import BO.Type;
+import DB.DBUser;
 
 public class UserInfo {
 

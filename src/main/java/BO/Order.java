@@ -2,6 +2,7 @@ package BO;
 
 import DB.DBOrder;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class Order {
@@ -9,9 +10,9 @@ public class Order {
     private Status status;
     private ArrayList<Item> items;
 
-    public Order(int id, Status status, ArrayList<Item> items) {
+    public Order(int id, String status, ArrayList<Item> items) {
         this.id = id;
-        this.status = status;
+        this.status = Status.valueOf(status);
         this.items = items;
     }
 
@@ -39,7 +40,7 @@ public class Order {
         this.items = items;
     }
 
-    public static ArrayList<Order> getById(int id) {
+    public static Order getById(String id) throws SQLException {
         return DBOrder.getById(id);
     }
 }

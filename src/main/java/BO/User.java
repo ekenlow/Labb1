@@ -18,6 +18,11 @@ public class User {
         this.password = password;
     }
 
+
+    public static User createUser(String username, String password, Type type) throws SQLException {
+        return DBUser.createUser(username,password,type);
+    }
+
     public int getId() {
         return id;
     }

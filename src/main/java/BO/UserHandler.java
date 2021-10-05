@@ -16,4 +16,10 @@ public class UserHandler {
     public static boolean login(String email, String password) throws SQLException, NullPointerException {
         return User.getUserByEmail(email).checkPassword(password);
     }
+
+    public static UserInfo createUser(String username, String password) throws SQLException {
+        User.createUser(username,password,Type.USER);
+        return null;
+       // return getByName(username);
+    }
 }
