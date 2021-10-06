@@ -20,12 +20,18 @@ public class Item {
         this.price = price;
     }
 
-    public static Collection getByName(String search){
+    public static Collection<DBItem> getByName(String search){
         return DBItem.getByName(search);
     }
     public static Item getById (String search){ return DBItem.getById(search);}
     public static Collection getByType(String search){ return DBItem.getByType(search);}
+    public static Collection getAll() {
+        return DBItem.getAll();
+    }
 
+    public int getId() {
+        return id;
+    }
     public String getType() {
         return type;
     }
@@ -57,4 +63,6 @@ public class Item {
     public void setPrice(float price) {
         this.price = price;
     }
+
+
 }

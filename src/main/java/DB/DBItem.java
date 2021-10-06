@@ -11,6 +11,7 @@ public class DBItem extends BO.Item {
     private static final String searchByName = "SELECT * FROM t_item WHERE name = ?";
     private static final String searchById = "SELECT * FROM t_item WHERE id = ?";
     private static final String searchByType = "SELECT * FROM t_item WHERE type = ?";
+    private static final String searchAll = "SELECT * FROM t_item";
 
     public static Collection getByName(String search) {
         return getItems(search, searchByName);
@@ -20,6 +21,9 @@ public class DBItem extends BO.Item {
     }
     public static Collection getByType(String search){
         return getItems(search,searchByType);
+    }
+    public static Collection getAll() {
+        return getItems();
     }
 
 
@@ -51,19 +55,41 @@ public class DBItem extends BO.Item {
             PreparedStatement st = con.prepareStatement(searchBy);
             st.setString(1,search);
             ResultSet rs = st.executeQuery();
-            while (rs.next()){
-                int id = rs.getInt("id");
-                String type = rs.getString("type");
-                String name = rs.getString("name");
-                int stock = rs.getInt("stock");
-                float price = rs.getFloat("price");
-
-                collection.add(new DBItem(id,type,name,stock,price));
-            }
+            collection = (ArrayList<Item>) getItemFromResults(rs);
         }catch (SQLException e){
             e.printStackTrace();
         }
 
+        return collection;
+    }
+
+
+    private static Collection<Item> getItems() {
+        ArrayList<Item> collection = null;
+        try {
+            Connection con = DBManager.getCon();
+            PreparedStatement st = con.prepareStatement(searchAll);
+            ResultSet rs = st.executeQuery();
+            collection = (ArrayList<Item>) getItemFromResults(rs);
+
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return collection;
+    }
+
+    private static Collection<Item> getItemFromResults(ResultSet rs) throws SQLException {
+        ArrayList<Item> collection = new ArrayList<>();
+        while (rs.next()){
+            int id = rs.getInt("id");
+            String type = rs.getString("type");
+            String name = rs.getString("name");
+            int stock = rs.getInt("stock");
+            float price = rs.getFloat("price");
+
+            collection.add(new DBItem(id,type,name,stock,price));
+        }
         return collection;
     }
 

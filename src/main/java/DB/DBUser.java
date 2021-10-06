@@ -21,17 +21,12 @@ public class DBUser extends BO.User{
     }
 
     public static DBUser createUser(String username, String password, Type type) throws SQLException {
-        try {
             Connection con = DBManager.getCon();
             PreparedStatement st = con.prepareStatement(insertNewUser);
             st.setString(1,username);
             st.setString(2,password);
             st.setString(3, String.valueOf(type));
             st.execute();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-
         return getUser(username,searchByName);
     }
 

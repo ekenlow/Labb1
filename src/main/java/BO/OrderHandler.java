@@ -14,7 +14,7 @@ public class OrderHandler {
         ArrayList<ItemInfo> items = new ArrayList<>();
         for (Item item :
                 order.getItems()) {
-            items.add(new ItemInfo(item.getType(),item.getName(),item.getStock(), item.getPrice()));
+            items.add(new ItemInfo(item.getId(), item.getType(),item.getName(),item.getStock(), item.getPrice()));
         }
         return new OrderInfo(order.getId(),order.getStatus(),items);
     }

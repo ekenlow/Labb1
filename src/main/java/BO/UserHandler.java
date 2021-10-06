@@ -18,8 +18,7 @@ public class UserHandler {
     }
 
     public static UserInfo createUser(String username, String password) throws SQLException {
-        User.createUser(username,password,Type.USER);
-        return null;
-       // return getByName(username);
+        User user =  User.createUser(username,password,Type.USER);
+        return new UserInfo(user.getType(),user.getUsername());
     }
 }
