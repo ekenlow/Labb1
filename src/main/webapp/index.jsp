@@ -1,6 +1,6 @@
 <%@ page import="View.Controller" %>
 <%@ page import="BO.Type" %>
-<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.HashMap" %>
 <%@ page import="View.ItemInfo" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -15,9 +15,10 @@
     }
 </style>
 <body>
-<% ArrayList<View.ItemInfo> items = (ArrayList<ItemInfo>) Controller.getItems();
+<% HashMap<Integer, ItemInfo> items = Controller.getItems();
     session.setAttribute("items", items);
 %>
+
 <%if (session.getAttribute("user") == null){%>
     <%@ include file="login.jsp" %>
 <%}else{%>
@@ -42,18 +43,28 @@
             <th>Product name</th>
             <th>Price</th>
             <th>Stock</th>
+            <th>In cart</th>
         </tr>
 
             <c:forEach var="item" items="${sessionScope.items}">
                     <tr>
-                            <td><c:out value="${item.name}"></c:out></td>
-                            <td><c:out value="${item.price}"></c:out></td>
-                            <td><c:out value="${item.stock}"></c:out></td> <!-- //Lagrar vi id i knappen? När tar vi från lagret? Vid checkout? -->
-                            <td><input type="submit" id="addCartBtn" name="addToCart" value="${item.id}"/></td>
+                            <td><c:out value="${item.value.name}"></c:out></td>
+                            <td><c:out value="${item.value.price}"></c:out></td>
+                            <td><c:out value="${item.value.stock}"></c:out></td> <!-- //Lagrar vi id i knappen? När tar vi från lagret? Vid checkout? -->
+                            <td>
+                                <form action="${pageContext.request.contextPath}/hello-servlet" method="post">
+                                    <input type="hidden" name="itemId" value="${item.key}" />
+                                    <input type="submit" value="Add to cart" />
+                                </form>
+                            </td>
+                        <td>
+                            <c:out value="${sessionScope.cart[item.key]}">0</c:out>
+                        </td>
                     </tr>
             </c:forEach>
-
     </c:if>
 </table>
+<br>
+<a href="cart.jsp">Go to cart</a>
 </body>
 </html>
