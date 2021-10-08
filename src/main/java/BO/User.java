@@ -3,6 +3,7 @@ package BO;
 import DB.DBUser;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class User {
@@ -21,6 +22,14 @@ public class User {
 
     public static User createUser(String username, String password, Type type) throws SQLException {
         return DBUser.createUser(username,password,type);
+    }
+
+    public static Collection<User> getAll() throws SQLException {
+        return DBUser.getAll();
+    }
+
+    public static User getUserById(int search) throws SQLException {
+        return DBUser.getUserById(search);
     }
 
     public int getId() {
@@ -62,5 +71,7 @@ public class User {
         return DBUser.getUserByEmail(search);
     }
 
-
+    public static void setType(int id, Type newType) throws SQLException {
+        DBUser.setType(id, newType);
+    }
 }

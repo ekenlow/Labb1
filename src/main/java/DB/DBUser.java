@@ -14,7 +14,9 @@ public class DBUser extends BO.User{
     private static final String searchByName = "SELECT * FROM t_user WHERE email = ?";
     private static final String searchById = "SELECT * FROM t_user WHERE id = ?";
     private static final String searchByType = "SELECT * FROM t_user WHERE type = ?";
+    private static final String setType = "UPDATE t_user SET type = ? WHERE id = ?";
     private static final String insertNewUser = "INSERT INTO db.t_user (email, password, type) VALUES (?,?,?)";
+    private static final String searchAll = "SELECT * FROM t_user";
 
     private DBUser(int id ,String type, String username, String password) {
         super(id, type, username, password);
@@ -34,8 +36,8 @@ public class DBUser extends BO.User{
         return getUser(search,searchByName);
     }
 
-    public static DBUser getUserByID(String search) throws SQLException {
-        return getUser(search, searchById);
+    public static DBUser getUserById(int id) throws SQLException {
+        return getUser(String.valueOf(id), searchById);
     }
 
     private static DBUser getUser(String search, String searchBy) throws SQLException {
@@ -57,6 +59,27 @@ public class DBUser extends BO.User{
         return result;
     }
 
+    public static Collection<User>getAll() throws SQLException {
+        Connection con = DBManager.getCon();
+        PreparedStatement st = con.prepareStatement(searchAll);
+        ResultSet rs = st.executeQuery();
+
+        return getUserFromResults(rs);
+    }
+
+    private static Collection<User> getUserFromResults(ResultSet rs) throws SQLException {
+        ArrayList<User> collection = new ArrayList<>();
+        while (rs.next()){
+            int id = rs.getInt("id");
+            String type = rs.getString("type");
+            String username = rs.getString("email");
+            String password = rs.getString("password");
+
+            collection.add(new DBUser(id, type,username,password));
+        }
+        return collection;
+    }
+
     private static Collection<User> getUsers(String search, String searchBy) {
         ArrayList<User> collection = new ArrayList<>();
         try {
@@ -64,18 +87,18 @@ public class DBUser extends BO.User{
             PreparedStatement st = con.prepareStatement(searchBy);
             st.setString(1,search);
             ResultSet rs = st.executeQuery();
-            while (rs.next()){
-                int id = rs.getInt("id");
-                String type = rs.getString("type");
-                String username = rs.getString("username");
-                String password = rs.getString("password");
-
-                collection.add(new DBUser(id, type,username,password));
-            }
         }catch (SQLException e){
             e.printStackTrace();
         }
-
         return collection;
+    }
+
+
+    public static void setType(int id, Type newType) throws SQLException {
+        Connection con = DBManager.getCon();
+        PreparedStatement st = con.prepareStatement(setType);
+        st.setString(1, newType.toString());
+        st.setInt(2, id);
+        st.execute();
     }
 }

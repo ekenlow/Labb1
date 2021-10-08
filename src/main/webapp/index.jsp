@@ -15,19 +15,13 @@
     }
 </style>
 <body>
-<% HashMap<Integer, ItemInfo> items = Controller.getItems();
-    session.setAttribute("items", items);
-%>
-
 <%if (session.getAttribute("user") == null){%>
     <%@ include file="login.jsp" %>
 <%}else{%>
-
 <form method="post" action="${pageContext.request.contextPath}/hello-servlet">
     <p>Welcome ${sessionScope.get("user").username}, you are a ${sessionScope.get("user").type}
         <input type="submit" value="logout" name="logout">
     </p>
-
 </form>
 <% }%>
 <% String msg = (String) session.getAttribute("error");
@@ -37,8 +31,11 @@
     session.setAttribute("error", null);
 } %>
 <br>
-<table>
-    <c:if test="${sessionScope.user == null || sessionScope.user.type == Type.USER}">
+<c:if test="${sessionScope.user == null || sessionScope.user.type == Type.USER}">
+    <% HashMap<Integer, ItemInfo> items = Controller.getItems();
+        session.setAttribute("items", items);
+    %>
+    <table>
         <tr>
             <th>Product name</th>
             <th>Price</th>
@@ -62,9 +59,18 @@
                         </td>
                     </tr>
             </c:forEach>
-    </c:if>
-</table>
+    </table>
+<a href="${pageContext.request.contextPath}/hello-servlet?goToCart">Go to cart</a>
+</c:if>
+
+<c:if test="${sessionScope.user.type == Type.ADMIN}">
+    <a href="${pageContext.request.contextPath}/hello-servlet?goToItems">Go to items</a>
+    <%@include file="users.jsp"%>
+</c:if>
+
+<c:if test="${sessionScope.user.type == Type.STOCKFILLER}">
+    <%@include file="order.jsp"%>
+</c:if>
 <br>
-<a href="cart.jsp">Go to cart</a>
 </body>
 </html>

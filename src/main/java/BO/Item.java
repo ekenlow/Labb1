@@ -1,7 +1,9 @@
 package BO;
 
 import DB.DBItem;
+import View.ItemInfo;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 
@@ -20,13 +22,21 @@ public class Item {
         this.price = price;
     }
 
-    public static Collection<DBItem> getByName(String search){
+    public static Collection getByName(String search){
         return DBItem.getByName(search);
     }
-    public static Item getById (String search){ return DBItem.getById(search);}
-    public static Collection getByType(String search){ return DBItem.getByType(search);}
-    public static Collection getAll() {
+    public static Item getById (String search) {
+        return DBItem.getById(search);
+    }
+    public static Collection getByType(String search) {
+        return DBItem.getByType(search);
+    }
+    public static Collection getAll() throws SQLException {
         return DBItem.getAll();
+    }
+
+    public static void createItem(String name, String type, int stock, float price) throws SQLException{
+        DBItem.createItem(name,type,stock,price);
     }
 
     public int getId() {
@@ -65,4 +75,11 @@ public class Item {
     }
 
 
+    public static void updateItem(int id, String name, String type, int stock, float price) throws SQLException {
+        DBItem.updateItem(id, name, type, stock, price);
+    }
+
+    public static void delteItem(int id) throws SQLException{
+        DBItem.deleteItem(id);
+    }
 }

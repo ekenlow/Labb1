@@ -1,5 +1,5 @@
 package BO;
 
 public enum Type {
-    USER,ADMIN,STOCKFILLER
+    USER,ADMIN,STOCKFILLER;
 }
