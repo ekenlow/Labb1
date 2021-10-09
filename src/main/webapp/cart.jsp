@@ -14,6 +14,13 @@
 </head>
 <body>
 <h1>Cart</h1>
+<% String msgCart = (String) session.getAttribute("errorCart");
+    if (msgCart != null) {%>
+<p style="color:red"><%= msgCart %></p>
+<%
+        session.setAttribute("errorCart", null);
+    } %>
+
 <% HashMap<Integer, Integer> cart = (HashMap<Integer, Integer>) session.getAttribute("cart");
     if ((cart == null) || (cart.size() == 0)) {%>
 <p>Cart is empty</p>
@@ -40,7 +47,7 @@
             </td>
         </tr>
     </c:forEach>
-    <tr><!--TODO:Fixa med en if sats så ifall cart är tom så ska denna row inte visas, eller helst hela tabellen!-->
+    <tr>
         <th>Total price</th>
         <th><c:out value="${totalPrice}"></c:out></th>
         <td>SEK</td>

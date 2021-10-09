@@ -21,7 +21,7 @@ public class OrderHandler {
     }
 
     public static boolean checkOut(HashMap<Integer, Integer> cart, HashMap<Integer, ItemInfo> cartInfo) throws SQLException {
-        Order.createOrder(cart, cartInfo);
+        Order.createOrder(cart);
         return false;
     }
 

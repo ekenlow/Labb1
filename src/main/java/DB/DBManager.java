@@ -8,7 +8,7 @@ public class DBManager {
     private static DBManager instance;
     private Connection con;
 
-    private DBManager() {
+    private DBManager() throws SQLException {
         try {
 
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -20,19 +20,16 @@ public class DBManager {
         {
             e.printStackTrace();
         }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
-    private static DBManager getInstance() {
+    private static DBManager getInstance() throws SQLException {
         if (instance == null) {
             instance = new DBManager();
         }
         return instance;
     }
 
-    public static Connection getCon() {
+    public static Connection getCon() throws SQLException {
         return getInstance().con;
     }
 

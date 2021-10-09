@@ -18,29 +18,30 @@
         </tr>
         </thead>
         <tbody>
-            <c:forEach var="user" items="${sessionScope.users}">
-                <tr>
-                    <td><c:out value="${user.username}"></c:out></td>
-                    <td>
-                       <form action="${pageContext.request.contextPath}/hello-servlet" method="post">
-                           <select name="roles" id="roles">
-                               <c:forEach items="${Type.values()}" var="type">
-                                   <option value="${type}" ${type == user.type ? 'selected="selected"':''}> ${type} </option>
-                               </c:forEach>
-                           </select>
-                           <input type="hidden" name="updateUser" value="${user.id}">
-                           <input type="submit" name="submit">
-                       </form>
-                    </td>
-                </tr>
-            </c:forEach>
+        <c:forEach var="user" items="${sessionScope.users}">
+            <tr>
+                <td><c:out value="${user.username}"></c:out></td>
+                <td>
+                    <form action="${pageContext.request.contextPath}/hello-servlet" method="post">
+                        <select name="roles" id="roles">
+                            <c:forEach items="${Type.values()}" var="type">
+                                <option value="${type}" ${type == user.type ? 'selected="selected"':''}> ${type} </option>
+                            </c:forEach>
+                        </select>
+                        <input type="hidden" name="updateUser" value="${user.id}">
+                        <input type="submit" name="submit">
+                    </form>
+                </td>
+            </tr>
+        </c:forEach>
         </tbody>
     </table>
 
 </form>
 <% String msgAdmin = (String) session.getAttribute("errorAdmin");
     if (msgAdmin != null) {%>
-<p style="color:red"><%= msgAdmin %></p>
+<p style="color:red"><%= msgAdmin %>
+</p>
 <%
         session.setAttribute("errorAdmin", null);
     } %>

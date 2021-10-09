@@ -1,8 +1,6 @@
 package BO;
 
 import DB.DBOrder;
-import View.ItemInfo;
-import View.OrderInfo;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -62,8 +60,8 @@ public class Order {
         return DBOrder.getById(id);
     }
 
-    public static boolean createOrder(HashMap<Integer, Integer> cart, HashMap<Integer, ItemInfo> cartInfo) throws SQLException {
-        return DBOrder.createOrder(cart, cartInfo);
+    public static boolean createOrder(HashMap<Integer, Integer> cart) throws SQLException {
+        return DBOrder.createOrder(cart);
     }
 
     public static Collection<Order> getAll() throws SQLException {

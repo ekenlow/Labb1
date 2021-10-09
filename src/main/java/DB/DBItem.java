@@ -135,4 +135,8 @@ public class DBItem extends BO.Item {
         st.setInt(1, id);
         st.executeUpdate();
     }
+
+    public static int getStockById(int itemId) throws SQLException {
+        return getById(String.valueOf(itemId)).getStock();
+    }
 }

@@ -34,7 +34,10 @@
 <c:if test="${sessionScope.user == null || sessionScope.user.type == Type.USER}">
     <% HashMap<Integer, ItemInfo> items = Controller.getItems();
         session.setAttribute("items", items);
+        if(items.isEmpty()){
     %>
+    <p style="color:red"><%= "Internal Server Error" %></p>
+    <%}%>
     <table>
         <tr>
             <th>Product name</th>

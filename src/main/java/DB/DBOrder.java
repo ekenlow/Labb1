@@ -53,7 +53,7 @@ public class DBOrder extends BO.Order{
 
     }
 
-    public static boolean createOrder(HashMap<Integer, Integer> cart, HashMap<Integer, ItemInfo> cartInfo) throws SQLException {
+    public static boolean createOrder(HashMap<Integer, Integer> cart) throws SQLException {
         Connection con = DBManager.getCon();
         con.setAutoCommit(false);
         try {
@@ -66,6 +66,8 @@ public class DBOrder extends BO.Order{
 
             PreparedStatement orderItemSt = con.prepareStatement(insertOrderItem);
             for (Integer itemId : cart.keySet()) {
+                if( (DBItem.getStockById(itemId) - cart.get(itemId)) <0)
+                    throw new SQLException();
                 orderItemSt.setInt(1, orderId);
                 orderItemSt.setInt(2, itemId);
                 orderItemSt.setInt(3, cart.get(itemId));

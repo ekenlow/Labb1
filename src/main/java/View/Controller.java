@@ -19,7 +19,11 @@ public class Controller extends HttpServlet {
     private static final String home = "/Labb1_war_exploded/";
 
     public void init() {
-        DBManager.getCon();
+        try {
+            DBManager.getCon();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -32,7 +36,7 @@ public class Controller extends HttpServlet {
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         HttpSession session = req.getSession();
         if (req.getParameter("login") != null) {
-            login(req, resp, session);
+            login(req, session);
         } else if (req.getParameter("register") != null) {
             registerUser(req, session);
         } else if (req.getParameter("logout") != null) {
@@ -40,9 +44,12 @@ public class Controller extends HttpServlet {
         } else if (req.getParameter("itemId") != null) {
             addItemToCart(req, session);
         } else if (req.getParameter("clearCart") != null) {
-            clearCart(req, session);
+            clearCart(session);
         } else if (req.getParameter("checkOut") != null) {
-            checkoutItems(req, session);
+            if(!checkoutItems(session)){
+                resp.sendRedirect(home + "cart.jsp");
+                return;
+            }
         } else if (req.getParameter("goToCart") != null) {
             UserInfo user = (UserInfo) session.getAttribute("user");
             if (user == null) {
@@ -53,7 +60,7 @@ public class Controller extends HttpServlet {
                     resp.sendRedirect(home + "cart.jsp");
                     return;
                 } else {
-                    session.setAttribute("error", "Wrong acecces level");
+                    session.setAttribute("error", "Wrong access level");
                 }
             }
         } else if (req.getParameter("removeId") != null) {
@@ -90,38 +97,21 @@ public class Controller extends HttpServlet {
                     resp.sendRedirect(home + "item.jsp");
                     return;
                 } else {
-                    session.setAttribute("error", "Wrong acecces level");
+                    session.setAttribute("error", "Wrong access level");
                 }
             }
         }else if (req.getParameter("updateItem")!=null) {
-            int id = Integer.parseInt(req.getParameter("updateItem"));
-            String name = req.getParameter("name");
-            String type = req.getParameter("type");
-            int stock = Integer.parseInt(req.getParameter("stock"));
-            float price = Float.parseFloat(req.getParameter("price"));
-            try {
-                ItemHandler.updateItem(id,name,type,stock,price);
-            } catch (SQLException e) {
-                session.setAttribute("updateError", "Could not update item");
-            }
+            updateItem(req, session);
             resp.sendRedirect(home + "item.jsp");
             return;
         } else if(req.getParameter("addItem") != null){
-            String name = req.getParameter("newName");
-            String type = req.getParameter("newType");
-            int stock = Integer.parseInt(req.getParameter("newStock"));
-            float price = Float.parseFloat(req.getParameter("newPrice"));
-
-            try {
-                ItemHandler.createItem(name,type,stock,price);
-            } catch (SQLException e) {
-
-            }
+            addNewItem(req, session);
+            resp.sendRedirect(home + "item.jsp");
+            return;
         }else if (req.getParameter("deleteItem")!= null){
             try {
                 ItemHandler.deleteItem(req.getParameter("deleteItem"));
             } catch (SQLException e) {
-                e.printStackTrace();
                 session.setAttribute("deleteError", "Could not delete item as it is in an existing order");
             }
             resp.sendRedirect(home + "item.jsp");
@@ -130,7 +120,33 @@ public class Controller extends HttpServlet {
         resp.sendRedirect(home);
     }
 
-    private void checkoutItems(HttpServletRequest req, HttpSession session) {
+    private void addNewItem(HttpServletRequest req, HttpSession session) {
+        String name = req.getParameter("newName");
+        String type = req.getParameter("newType");
+        int stock = Integer.parseInt(req.getParameter("newStock"));
+        float price = Float.parseFloat(req.getParameter("newPrice"));
+
+        try {
+            ItemHandler.createItem(name,type,stock,price);
+        } catch (SQLException e) {
+            session.setAttribute("updateError","An internal server error occurred");
+        }
+    }
+
+    private void updateItem(HttpServletRequest req, HttpSession session) {
+        int id = Integer.parseInt(req.getParameter("updateItem"));
+        String name = req.getParameter("name");
+        String type = req.getParameter("type");
+        int stock = Integer.parseInt(req.getParameter("stock"));
+        float price = Float.parseFloat(req.getParameter("price"));
+        try {
+            ItemHandler.updateItem(id,name,type,stock,price);
+        } catch (SQLException e) {
+            session.setAttribute("updateError", "Could not update item");
+        }
+    }
+
+    private boolean checkoutItems(HttpSession session) {
         HashMap<Integer, Integer> cart;
         HashMap<Integer, ItemInfo> cartInfo;
         if (session.getAttribute("cart") != null && session.getAttribute("cartInfo") != null) {
@@ -138,14 +154,15 @@ public class Controller extends HttpServlet {
             cartInfo = (HashMap<Integer, ItemInfo>) session.getAttribute("cartInfo");
 
             try {
-                OrderHandler.checkOut(cart,cartInfo); // TODO: Implement
+                OrderHandler.checkOut(cart,cartInfo);
+                clearCart(session);
+                return true;
             } catch (SQLException e) {
-                e.printStackTrace();
+                session.setAttribute("errorCart", "Could not complete your order");
+                return false;
             }
-            clearCart(req, session);
-        }else {
-            session.setAttribute("errorCart", "Empty cart");
         }
+        return false;
     }
 
     private void removeItemFromCart(HttpServletRequest req, HttpSession session) {
@@ -165,7 +182,7 @@ public class Controller extends HttpServlet {
         }
     }
 
-    private void clearCart(HttpServletRequest req, HttpSession session) {
+    private void clearCart(HttpSession session) {
         HashMap<Integer, Integer> cart;
         HashMap<Integer, ItemInfo> cartInfo;
         if (session.getAttribute("cart") != null && session.getAttribute("cartInfo") != null) {
@@ -214,13 +231,13 @@ public class Controller extends HttpServlet {
         String username = req.getParameter("username");
         String password = req.getParameter("password");
         try {
-            UserInfo u = UserHandler.createUser(username, password);
+            UserHandler.createUser(username, password);
         } catch (SQLException e) {
             session.setAttribute("error", "That username already exists");
         }
     }
 
-    private boolean authenticate(HttpServletRequest req, HttpServletResponse resp) {
+    private boolean authenticate(HttpServletRequest req) {
         try {
             return UserHandler.login(req.getParameter("username"), req.getParameter("password"));
 
@@ -232,7 +249,7 @@ public class Controller extends HttpServlet {
 
 
     public static HashMap<Integer, ItemInfo> getItems() {
-        ArrayList<ItemInfo> items = null;
+        ArrayList<ItemInfo> items;
         HashMap<Integer, ItemInfo> map = new HashMap<>();
         try {
             items = (ArrayList<ItemInfo>) ItemHandler.getAll();
@@ -251,8 +268,8 @@ public class Controller extends HttpServlet {
         try {
 
             collection = UserHandler.getAll();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
         }
         return collection;
     }
@@ -262,8 +279,8 @@ public class Controller extends HttpServlet {
     }
 
 
-    private void login(HttpServletRequest req, HttpServletResponse resp, HttpSession session) {
-        if (authenticate(req, resp)) {
+    private void login(HttpServletRequest req, HttpSession session) {
+        if (authenticate(req)) {
             try {
                 UserInfo u = UserHandler.getByName(req.getParameter("username"));
                 session.setAttribute("user", u);
@@ -276,8 +293,7 @@ public class Controller extends HttpServlet {
     }
 
     public static ArrayList<OrderInfo> getOrders() {
-        ArrayList<OrderInfo> orders = null;
-        HashMap<Integer, ItemInfo> map = new HashMap<>();
+        ArrayList<OrderInfo> orders;
         try {
             orders = (ArrayList<OrderInfo>) OrderHandler.getAll();
         } catch (SQLException e) {

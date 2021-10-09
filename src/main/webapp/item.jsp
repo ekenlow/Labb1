@@ -13,8 +13,8 @@
     }
 </style>
 <body>
-Hello world!
 
+<h1>Items in database</h1>
 <% HashMap<Integer, ItemInfo> items = Controller.getItems();
     session.setAttribute("items", items);
 %>
@@ -56,8 +56,8 @@ Hello world!
 </table>
 
 <form action="${pageContext.request.contextPath}/hello-servlet" method="post">
+    <h1>Add Item</h1>
     <table>
-        <h4>Add Item</h4>
         <tr>
             <td><label>Name: </label><input type="text" name="newName" value=""></td>
             <td><label>Price: </label><input type="text" name="newPrice" value=""></td>
@@ -70,6 +70,7 @@ Hello world!
         </tr>
     </table>
 </form>
-
+<br>
+<a href="index.jsp">Go to home page</a>
 </body>
 </html>
