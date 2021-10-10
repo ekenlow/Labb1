@@ -1,8 +1,9 @@
 package DB;
 
-import BO.Item;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -13,7 +14,7 @@ public class DBItem extends BO.Item {
     private static final String searchByType = "SELECT * FROM t_item WHERE type = ?";
     private static final String searchAll = "SELECT * FROM t_item";
 
-    public static Collection getByName(String search) {
+    public static Collection<DBItem> getByName(String search) {
         return getItems(search, searchByName);
     }
 
@@ -21,11 +22,11 @@ public class DBItem extends BO.Item {
         return getItem(search, searchById);
     }
 
-    public static Collection getByType(String search) {
+    public static Collection<DBItem> getByType(String search) {
         return getItems(search, searchByType);
     }
 
-    public static Collection getAll() throws SQLException {
+    public static Collection<DBItem> getAll() throws SQLException {
         return getItems();
     }
 
@@ -51,14 +52,14 @@ public class DBItem extends BO.Item {
         return item;
     }
 
-    private static Collection<Item> getItems(String search, String searchBy) {
-        ArrayList<Item> collection = new ArrayList<>();
+    private static Collection<DBItem> getItems(String search, String searchBy) {
+        ArrayList<DBItem> collection = new ArrayList<>();
         try {
             Connection con = DBManager.getCon();
             PreparedStatement st = con.prepareStatement(searchBy);
             st.setString(1, search);
             ResultSet rs = st.executeQuery();
-            collection = (ArrayList<Item>) getItemFromResults(rs);
+            collection = (ArrayList<DBItem>) getItemFromResults(rs);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -67,15 +68,15 @@ public class DBItem extends BO.Item {
     }
 
 
-    private static Collection<Item> getItems() throws SQLException {
+    private static Collection<DBItem> getItems() throws SQLException {
         Connection con = DBManager.getCon();
         PreparedStatement st = con.prepareStatement(searchAll);
         ResultSet rs = st.executeQuery();
         return getItemFromResults(rs);
     }
 
-    private static Collection<Item> getItemFromResults(ResultSet rs) throws SQLException {
-        ArrayList<Item> collection = new ArrayList<>();
+    private static Collection<DBItem> getItemFromResults(ResultSet rs) throws SQLException {
+        ArrayList<DBItem> collection = new ArrayList<>();
         while (rs.next()) {
             int id = rs.getInt("id");
             String type = rs.getString("type");
@@ -123,8 +124,8 @@ public class DBItem extends BO.Item {
         PreparedStatement st = con.prepareStatement("INSERT INTO t_item (name, type, price, stock) VALUES (?, ?, ?, ?)");
         st.setString(1, name);
         st.setString(2, type);
-        st.setInt(3, stock);
-        st.setFloat(4, price);
+        st.setFloat(3, price);
+        st.setInt(4, stock);
         st.executeUpdate();
         st.close();
     }

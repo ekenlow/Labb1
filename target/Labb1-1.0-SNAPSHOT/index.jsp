@@ -49,7 +49,7 @@
             <c:forEach var="item" items="${sessionScope.items}">
                     <tr>
                             <td><c:out value="${item.value.name}"></c:out></td>
-                            <td><c:out value="${item.value.price}"></c:out></td>
+                            <td><c:out value="${item.value.price}"></c:out>:-</td>
                             <td><c:out value="${item.value.stock}"></c:out></td> <!-- //Lagrar vi id i knappen? När tar vi från lagret? Vid checkout? -->
                             <td>
                                 <form action="${pageContext.request.contextPath}/hello-servlet" method="post">

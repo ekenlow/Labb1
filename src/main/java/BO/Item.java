@@ -79,7 +79,7 @@ public class Item {
         DBItem.updateItem(id, name, type, stock, price);
     }
 
-    public static void delteItem(int id) throws SQLException{
+    public static void deleteItem(int id) throws SQLException{
         DBItem.deleteItem(id);
     }
 }

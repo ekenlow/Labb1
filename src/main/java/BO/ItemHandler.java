@@ -1,6 +1,5 @@
 package BO;
 
-import DB.DBItem;
 import View.ItemInfo;
 
 import java.sql.SQLException;
@@ -10,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class ItemHandler {
     public static Collection<ItemInfo> getByName(String name) {
-        ArrayList<DBItem> items = (ArrayList<DBItem>) Item.getByName(name);
+        ArrayList<Item> items = (ArrayList<Item>) Item.getByName(name);
         return items.stream().map(item -> new ItemInfo(item.getId(), item.getType(), item.getName(), item.getStock(), item.getPrice())).collect(Collectors.toCollection(ArrayList::new));
     }
     public static ItemInfo getById(String searchTerm){
@@ -27,7 +26,6 @@ public class ItemHandler {
 
         return  result;
     }
-    public static boolean addNewItem(){return false;}
 
     public static Collection<ItemInfo> getAll() throws SQLException {
         ArrayList<Item> items = (ArrayList<Item>) Item.getAll();
@@ -43,6 +41,6 @@ public class ItemHandler {
     }
 
     public static void deleteItem(String id) throws SQLException {
-        Item.delteItem(Integer.parseInt(id));
+        Item.deleteItem(Integer.parseInt(id));
     }
 }

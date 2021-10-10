@@ -1,6 +1,10 @@
 package View;
 
-import BO.*;
+import BO.Status;
+import BO.ItemHandler;
+import BO.OrderHandler;
+import BO.UserHandler;
+import BO.Type;
 import DB.DBManager;
 
 import javax.servlet.annotation.WebServlet;
@@ -72,21 +76,7 @@ public class Controller extends HttpServlet {
                 session.setAttribute("errorAdmin", "Failed to update role");
             }
         } else if (req.getParameter("updateOrder") != null) {
-            String orderId = (req.getParameter("updateOrder"));
-            try {
-                OrderInfo order = OrderHandler.getById(orderId);
-                switch (order.getStatus().name()) {
-                    case "ORDERED":
-                        OrderHandler.setStatus(order.getId(), Status.PICKING);
-                        break;
-                    case "PICKING":
-                        OrderHandler.setStatus(order.getId(), Status.SENT);
-                        break;
-                    default:
-                }
-            } catch (SQLException e) {
-                session.setAttribute("errorOrder", "Error processing orders");
-            }
+            updateOrder(req, session);
         }else if(req.getParameter("goToItems") !=null){
             UserInfo user = (UserInfo) session.getAttribute("user");
             if (user == null) {
@@ -118,6 +108,24 @@ public class Controller extends HttpServlet {
             return;
         }
         resp.sendRedirect(home);
+    }
+
+    private void updateOrder(HttpServletRequest req, HttpSession session) {
+        String orderId = (req.getParameter("updateOrder"));
+        try {
+            OrderInfo order = OrderHandler.getById(orderId);
+            switch (order.getStatus().name()) {
+                case "ORDERED":
+                    OrderHandler.setStatus(order.getId(), Status.PICKING);
+                    break;
+                case "PICKING":
+                    OrderHandler.setStatus(order.getId(), Status.SENT);
+                    break;
+                default:
+            }
+        } catch (SQLException e) {
+            session.setAttribute("errorOrder", "Error processing orders");
+        }
     }
 
     private void addNewItem(HttpServletRequest req, HttpSession session) {

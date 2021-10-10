@@ -1,5 +1,6 @@
 <%@ page import="View.Controller" %>
 <%@ page import="java.util.HashMap" %>
+<%@page import="BO.Status" %>
 <%@ page import="View.OrderInfo" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -26,6 +27,7 @@
     </thead>
     <tbody>
     <c:forEach var="order" items="${sessionScope.orders}">
+        <c:if test="${order.status !=Status.SENT}">
         <tr>
             <td>${order.id}</td>
             <td>
@@ -53,6 +55,7 @@
                 </table>
             </td>
         </tr>
+        </c:if>
     </c:forEach>
     </tbody>
 </table>
