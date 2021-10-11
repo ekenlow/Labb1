@@ -55,59 +55,70 @@ public class Controller extends HttpServlet {
                 return;
             }
         } else if (req.getParameter("goToCart") != null) {
-            UserInfo user = (UserInfo) session.getAttribute("user");
-            if (user == null) {
-                session.setAttribute("error", "You need to login");
-
-            } else {
-                if (user.getType() == Type.USER) {
-                    resp.sendRedirect(home + "cart.jsp");
-                    return;
-                } else {
-                    session.setAttribute("error", "Wrong access level");
-                }
+            if (goToCart(resp, session)) {
+                return;
             }
         } else if (req.getParameter("removeId") != null) {
             removeItemFromCart(req, session);
         } else if (req.getParameter("updateUser") != null) {
-            int id = Integer.parseInt(req.getParameter("updateUser"));
-            Type type = Type.valueOf(req.getParameter("roles"));
-            if (!UserHandler.setType(id, type)) {
-                session.setAttribute("errorAdmin", "Failed to update role");
-            }
+            updateUser(req, session);
         } else if (req.getParameter("updateOrder") != null) {
             updateOrder(req, session);
-        }else if(req.getParameter("goToItems") !=null){
-            UserInfo user = (UserInfo) session.getAttribute("user");
-            if (user == null) {
-                session.setAttribute("error", "You need to login");
-
-            } else {
-                if (user.getType() == Type.ADMIN) {
-                    resp.sendRedirect(home + "item.jsp");
-                    return;
-                } else {
-                    session.setAttribute("error", "Wrong access level");
-                }
+        } else if(req.getParameter("goToItems") !=null) {
+            if (goToItems(resp, session)) {
+                return;
             }
-        }else if (req.getParameter("updateItem")!=null) {
+        } else if (req.getParameter("updateItem")!=null) {
             updateItem(req, session);
             resp.sendRedirect(home + "item.jsp");
             return;
-        } else if(req.getParameter("addItem") != null){
+        } else if(req.getParameter("addItem") != null) {
             addNewItem(req, session);
             resp.sendRedirect(home + "item.jsp");
             return;
-        }else if (req.getParameter("deleteItem")!= null){
-            try {
-                ItemHandler.deleteItem(req.getParameter("deleteItem"));
-            } catch (SQLException e) {
-                session.setAttribute("deleteError", "Could not delete item as it is in an existing order");
-            }
+        } else if (req.getParameter("deleteItem")!= null) {
+            deleteItem(req, session);
             resp.sendRedirect(home + "item.jsp");
             return;
         }
         resp.sendRedirect(home);
+    }
+
+    private void deleteItem(HttpServletRequest req, HttpSession session) {
+        try {
+            ItemHandler.deleteItem(req.getParameter("deleteItem"));
+        } catch (SQLException e) {
+            session.setAttribute("deleteError", "Could not delete item as it is in an existing order");
+        }
+    }
+
+    private boolean goToItems(HttpServletResponse resp, HttpSession session) {
+        UserInfo user = (UserInfo) session.getAttribute("user");
+        if (user == null) {
+            session.setAttribute("error", "You need to login");
+            return false;
+        } else {
+            try {
+                if (user.getType() == Type.ADMIN) {
+                    resp.sendRedirect(home + "item.jsp");
+                    return true;
+                } else {
+                    session.setAttribute("error", "Wrong access level");
+                    return false;
+                }
+            } catch (IOException e) {
+                session.setAttribute("error", "Internal server error");
+                return false;
+            }
+        }
+    }
+
+    private void updateUser(HttpServletRequest req, HttpSession session) {
+        int id = Integer.parseInt(req.getParameter("updateUser"));
+        Type type = Type.valueOf(req.getParameter("roles"));
+        if (!UserHandler.setType(id, type)) {
+            session.setAttribute("errorAdmin", "Failed to update role");
+        }
     }
 
     private void updateOrder(HttpServletRequest req, HttpSession session) {
@@ -223,7 +234,12 @@ public class Controller extends HttpServlet {
 
 
         int id = Integer.parseInt(req.getParameter("itemId"));
-        ItemInfo item = ItemHandler.getById(Integer.toString(id));
+        ItemInfo item = null;
+        try {
+            item = ItemHandler.getById(Integer.toString(id));
+        } catch (SQLException e) {
+            session.setAttribute("error", "Cannot find item");
+        }
         if (item.getStock() <= 0) {
             session.setAttribute("error", "Item out of stock");
             return;
@@ -310,5 +326,26 @@ public class Controller extends HttpServlet {
         }
 
         return orders;
+    }
+
+    private static boolean goToCart(HttpServletResponse resp, HttpSession session) {
+        UserInfo user = (UserInfo) session.getAttribute("user");
+        if (user == null) {
+            session.setAttribute("error", "You need to login");
+            return false;
+        } else {
+            try {
+                if (user.getType() == Type.USER) {
+                    resp.sendRedirect(home + "cart.jsp");
+                    return true;
+                } else {
+                    session.setAttribute("error", "Wrong access level");
+                    return false;
+                }
+            } catch (IOException e) {
+                session.setAttribute("error", "Internal server error");
+                return false;
+            }
+        }
     }
 }
