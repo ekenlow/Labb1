@@ -128,6 +128,7 @@ public class Controller extends HttpServlet {
         }
     }
 
+
     private void addNewItem(HttpServletRequest req, HttpSession session) {
         String name = req.getParameter("newName");
         String type = req.getParameter("newType");
@@ -245,12 +246,12 @@ public class Controller extends HttpServlet {
         }
     }
 
-    private boolean authenticate(HttpServletRequest req) {
+    private boolean authenticate(HttpServletRequest req, HttpSession session) {
         try {
             return UserHandler.login(req.getParameter("username"), req.getParameter("password"));
 
         } catch (SQLException | NullPointerException e) {
-            System.err.println("No such user");
+            session.setAttribute("error", "No such user");
             return false; // No such user
         }
     }
@@ -288,7 +289,7 @@ public class Controller extends HttpServlet {
 
 
     private void login(HttpServletRequest req, HttpSession session) {
-        if (authenticate(req)) {
+        if (authenticate(req,session)) {
             try {
                 UserInfo u = UserHandler.getByName(req.getParameter("username"));
                 session.setAttribute("user", u);
