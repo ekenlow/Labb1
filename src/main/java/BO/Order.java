@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 public class Order {
     private int id;
@@ -57,18 +58,22 @@ public class Order {
     }
 
     public static Order getById(String id) throws SQLException {
-        return DBOrder.getById(id);
+        return DBOrder.getByIdDB(id);
     }
 
     public static boolean createOrder(HashMap<Integer, Integer> cart) throws SQLException {
-        return DBOrder.createOrder(cart);
+        return DBOrder.createOrderDB(cart);
     }
 
-    public static Collection<Order> getAll() throws SQLException {
-        return DBOrder.getAll();
+    public static List<Order> getAll() throws SQLException {
+        List<Order> orders = new ArrayList<>();
+        for (DBOrder order : DBOrder.getAllDB()) {
+            orders.add((Order) order);
+        }
+        return orders;
     }
     
     public static boolean setStatus(int id, Status newStatus) throws SQLException {
-        return DBOrder.setStatus(id, newStatus);
+        return DBOrder.setStatusDB(id, newStatus);
     }
 }

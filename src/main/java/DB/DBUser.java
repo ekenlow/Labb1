@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class DBUser extends BO.User{
     private static final String searchByName = "SELECT * FROM t_user WHERE email = ?";
@@ -23,13 +24,14 @@ public class DBUser extends BO.User{
     }
 
     public static DBUser createUser(String username, String password, Type type) throws SQLException {
-            Connection con = DBManager.getCon();
-            PreparedStatement st = con.prepareStatement(insertNewUser);
-            st.setString(1,username);
-            st.setString(2,password);
+        Connection con = DBManager.getCon();
+        try (PreparedStatement st = con.prepareStatement(insertNewUser)) {
+            st.setString(1, username);
+            st.setString(2, password);
             st.setString(3, String.valueOf(type));
             st.execute();
-        return getUser(username,searchByName);
+            return getUser(username, searchByName);
+        }
     }
 
     public static DBUser getUserByEmail(String search) throws SQLException {
@@ -42,9 +44,9 @@ public class DBUser extends BO.User{
 
     private static DBUser getUser(String search, String searchBy) throws SQLException {
         DBUser result = null;
-        try {
-            Connection con = DBManager.getCon();
-            PreparedStatement st  = con.prepareStatement(searchBy);
+        Connection con = DBManager.getCon();
+        try (PreparedStatement st  = con.prepareStatement(searchBy)) {
+
             st.setString(1, search);
             ResultSet rs =  st.executeQuery();
             if (rs.next()) {
@@ -53,22 +55,21 @@ public class DBUser extends BO.User{
                                 rs.getString("email"),
                                 rs.getString("password"));
             }
-        } catch (SQLException e) {
-            throw new SQLException("");
+            return result;
         }
-        return result;
     }
 
-    public static Collection<User>getAll() throws SQLException {
+    public static List<DBUser> getAllDB() throws SQLException {
         Connection con = DBManager.getCon();
-        PreparedStatement st = con.prepareStatement(searchAll);
-        ResultSet rs = st.executeQuery();
+        try (PreparedStatement st = con.prepareStatement(searchAll)) {
+            ResultSet rs = st.executeQuery();
 
-        return getUserFromResults(rs);
+            return getUserFromResults(rs);
+        }
     }
 
-    private static Collection<User> getUserFromResults(ResultSet rs) throws SQLException {
-        ArrayList<User> collection = new ArrayList<>();
+    private static List<DBUser> getUserFromResults(ResultSet rs) throws SQLException {
+        List<DBUser> collection = new ArrayList<>();
         while (rs.next()){
             int id = rs.getInt("id");
             String type = rs.getString("type");
@@ -80,25 +81,23 @@ public class DBUser extends BO.User{
         return collection;
     }
 
-    private static Collection<User> getUsers(String search, String searchBy) {
-        ArrayList<User> collection = new ArrayList<>();
-        try {
-            Connection con = DBManager.getCon();
-            PreparedStatement st = con.prepareStatement(searchBy);
+    private static List<DBUser> getUsers(String search, String searchBy) throws SQLException {
+        Connection con = DBManager.getCon();
+        try (PreparedStatement st = con.prepareStatement(searchBy)){
+
             st.setString(1,search);
             ResultSet rs = st.executeQuery();
-        }catch (SQLException e){
-            e.printStackTrace();
+            return getUserFromResults(rs);
         }
-        return collection;
     }
 
 
     public static void setType(int id, Type newType) throws SQLException {
         Connection con = DBManager.getCon();
-        PreparedStatement st = con.prepareStatement(setType);
-        st.setString(1, newType.toString());
-        st.setInt(2, id);
-        st.execute();
+        try (PreparedStatement st = con.prepareStatement(setType)) {
+            st.setString(1, newType.toString());
+            st.setInt(2, id);
+            st.execute();
+        }
     }
 }

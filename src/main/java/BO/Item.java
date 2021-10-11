@@ -1,10 +1,8 @@
 package BO;
 
 import DB.DBItem;
-import View.ItemInfo;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,8 +22,13 @@ public class Item {
         this.price = price;
     }
 
-    public static List<Item> getByName(String search) {
-
+    public static List<Item> getByName(String search) throws SQLException {
+        List<DBItem> items = DBItem.getByNameDB(search);
+        List<Item> list = new ArrayList<>();
+        for (DBItem item : items) {
+            list.add((Item) item);
+        }
+        return list;
     }
 
     public static Item getById(String search) throws SQLException {
@@ -34,14 +37,18 @@ public class Item {
 
     public static List<Item> getByType(String search) throws SQLException {
         ArrayList<Item> list = new ArrayList<>();
-        for (DBItem item : DBItem.getByType(search)) {
+        for (DBItem item : DBItem.getByTypeDB(search)) {
             list.add((Item) item);
         }
         return list;
     }
 
     public static List<Item> getAll() throws SQLException {
-        return DBItem.getAll();
+        ArrayList<Item> list = new ArrayList<>();
+        for (DBItem item : DBItem.getAllDB()) {
+            list.add((Item) item);
+        }
+        return list;
     }
 
     public static void createItem(String name, String type, int stock, float price) throws SQLException {

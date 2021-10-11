@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 public class ItemHandler {
-    public static Collection<ItemInfo> getByName(String name) {
+    public static Collection<ItemInfo> getByName(String name) throws SQLException {
         ArrayList<Item> items = (ArrayList<Item>) Item.getByName(name);
         return items.stream().map(item -> new ItemInfo(item.getId(), item.getType(), item.getName(), item.getStock(), item.getPrice())).collect(Collectors.toCollection(ArrayList::new));
     }

@@ -4,7 +4,7 @@ import DB.DBUser;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 public class User {
     private int id;
@@ -24,12 +24,16 @@ public class User {
         return DBUser.createUser(username,password,type);
     }
 
-    public static Collection<User> getAll() throws SQLException {
-        return DBUser.getAll();
+    public static List<User> getAll() throws SQLException {
+        List<User> users = new ArrayList<>();
+        for (DBUser user : DBUser.getAllDB()) {
+            users.add((User) user);
+        }
+        return users;
     }
 
     public static User getUserById(int search) throws SQLException {
-        return DBUser.getUserById(search);
+        return (User) DBUser.getUserById(search);
     }
 
     public int getId() {
@@ -67,6 +71,7 @@ public class User {
     public boolean checkPassword(String password) {
         return password.equals(this.password);
     }
+
     public static User getUserByEmail(String search) throws SQLException {
         return DBUser.getUserByEmail(search);
     }
